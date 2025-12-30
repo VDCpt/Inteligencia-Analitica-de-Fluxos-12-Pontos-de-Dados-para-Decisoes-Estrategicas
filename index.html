@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VDC - Protocolo de Integridade Técnica</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        :root { --vdc-navy: #002d72; --vdc-gold: #a88f5d; }
+        body { background-color: #f4f7f6; font-family: 'Inter', sans-serif; color: #333; }
+        .audit-header { border-bottom: 4px solid var(--vdc-navy); margin-bottom: 30px; }
+        .card-audit { border: none; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .section-title { color: var(--vdc-navy); font-weight: 700; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; }
+        .form-label { font-weight: 600; font-size: 0.85rem; color: #555; }
+        .btn-vdc { background-color: var(--vdc-navy); color: white; font-weight: 600; padding: 12px 25px; }
+        .btn-vdc:hover { background-color: #001d4a; color: white; }
+    </style>
+</head>
+<body class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-xl-10">
+            <div class="card card-audit p-5">
+                <div class="audit-header pb-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-0 fw-bold">VDC - RELATÓRIO TÉCNICO</h2>
+                        <small class="text-muted">Protocolo de Conferência de Fluxos Financeiros v2025</small>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-success">Integridade Garantida</span>
+                    </div>
+                </div>
+
+                <form id="auditForm">
+                    <div class="row mb-4">
+                        <p class="section-title">I. Cronologia e Identificação</p>
+                        <div class="col-md-3">
+                            <label class="form-label">1. Data da Operação</label>
+                            <input type="date" class="form-control" id="p1" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">2. Data de Valor</label>
+                            <input type="date" class="form-control" id="p2">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">3. Ref. Transação / ID</label>
+                            <input type="text" class="form-control" id="p3" placeholder="ID Único" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">4. Tipo de Movimento</label>
+                            <select class="form-select" id="p4">
+                                <option value="Transferência">Transferência</option>
+                                <option value="Débito Direto">Débito Direto</option>
+                                <option value="MB WAY">MB WAY</option>
+                                <option value="Stripe/TPA">Stripe/TPA</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <p class="section-title">II. Entidade e Origem</p>
+                        <div class="col-md-4">
+                            <label class="form-label">5. Ordenante / Beneficiário</label>
+                            <input type="text" class="form-control" id="p5" placeholder="Nome da Entidade" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">6. IBAN / NIB</label>
+                            <input type="text" class="form-control" id="p6" placeholder="PT50...">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">7. Descrição / Memo</label>
+                            <input type="text" class="form-control" id="p7" placeholder="Texto do Extrato">
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <p class="section-title">III. Análise de Valor e Fiscalidade</p>
+                        <div class="col-md-3">
+                            <label class="form-label">8. Categoria (MCC)</label>
+                            <input type="text" class="form-control" id="p8" placeholder="Ex: Software/Publicidade">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">9. Montante Bruto (€)</label>
+                            <input type="number" step="0.01" class="form-control" id="p9" oninput="calcularIva()" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">10. Taxas / Comissões (€)</label>
+                            <input type="number" step="0.01" class="form-control" id="p10" value="0.00">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">11. Valor IVA (Auto 23%)</label>
+                            <input type="number" class="form-control bg-light" id="p11" readonly>
+                        </div>
+                    </div>
+
+                    <div class="row mb-5">
+                        <p class="section-title">IV. Conclusão de Auditoria</p>
+                        <div class="col-md-4">
+                            <label class="form-label">12. Saldo Final Resultante (€)</label>
+                            <input type="number" step="0.01" class="form-control fw-bold" id="p12" required>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-vdc" onclick="exportarPDF()">EXPORTAR PARECER TÉCNICO (PDF)</button>
+                        <a href="https://web.tresorit.com/" target="_blank" class="btn btn-outline-dark d-flex align-items-center">
+                            <span class="me-2">🔒 Secure Upload (Tresorit)</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
