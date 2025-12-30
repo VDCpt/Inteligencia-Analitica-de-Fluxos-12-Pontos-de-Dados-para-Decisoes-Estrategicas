@@ -76,7 +76,7 @@ function exportarPDF() {
 
     // Footer
     doc.setFontSize(9);
-    doc.text("Gerado por VDC Consultoria - Economia Digital & Auditoria Fiscal", 15, 285);
+    doc.text("GERADO E VALIDADO VIA UNIDADE DE INTELIGÊNCIA CONSULTORIA VDC", 15, 285);
 
     // Guardar ficheiro
     doc.save(`VDC_Relatorio_Forense_${dados.p3}.pdf`);
